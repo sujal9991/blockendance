@@ -4,136 +4,309 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if view_mode %}View Records - {% endif %}Class Details - Blockendance</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* Class Details page only */
+
+        .class-page-title {
+            margin: 20px 0 8px;
+        }
+
+        .class-page-subtitle {
+            margin: 0 0 25px;
+        }
+
+        .class-card {
+            margin: 0 auto 35px;
+        }
+
+        .class-card .card-content {
+            padding: 30px;
+        }
+
+        /*
+         * Materialize beta's floating labels can overlap pre-filled values.
+         * These rules explicitly float labels for this page.
+         */
+        .class-card .input-field input[type="number"] + label,
+        .class-card .input-field input[type="text"] + label,
+        .class-card .input-field input.datepicker + label {
+            top: 0 !important;
+        }
+
+        .class-card .input-field input[type="number"] + label.active,
+        .class-card .input-field input[type="text"] + label.active,
+        .class-card .input-field input.datepicker + label.active {
+            transform: translateY(-14px) scale(0.8) !important;
+            transform-origin: 0 0 !important;
+        }
+
+        /* Give select labels their own space above the select */
+        .class-card .select-field {
+            position: relative;
+            min-height: 75px;
+            margin-bottom: 25px;
+        }
+
+        .class-card .select-field > label {
+            position: absolute !important;
+            top: -4px !important;
+            left: 0 !important;
+            transform: translateY(-14px) scale(0.8) !important;
+            transform-origin: 0 0 !important;
+            color: #9e9e9e !important;
+            width: auto !important;
+        }
+
+        .class-card .select-field .select-wrapper {
+            padding-top: 10px;
+        }
+
+        .class-card .select-field .select-dropdown {
+            margin-top: 0 !important;
+        }
+
+        .class-buttons {
+            margin-top: 10px;
+        }
+
+        .class-buttons .btn {
+            margin: 4px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .class-card .card-content {
+                padding: 22px 16px;
+            }
+
+            .class-buttons .btn {
+                display: block;
+                width: 100%;
+                margin: 7px 0;
+            }
+        }
+    </style>
 </head>
 
 <body class="blue-grey lighten-4">
-    <div class="container">
-        <div class="row">
-            <div class="col s12 center-align">
-                <h4 class="blue-grey-text text-darken-2">
-                    {% if view_mode %}
-                        <i class="material-icons">search</i> Search Attendance Records
-                    {% else %}
-                        <i class="material-icons">class</i> Class Details
-                    {% endif %}
-                </h4>
-                {% if name and not view_mode %}
-                    <p class="flow-text">Hello {{ name }}, enter the details of the class</p>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col s12 center-align">
+
+            <h4 class="blue-grey-text text-darken-2 class-page-title">
+                {% if view_mode %}
+                    <i class="material-icons">search</i>
+                    Search Attendance Records
+                {% else %}
+                    <i class="material-icons">class</i>
+                    Class Details
                 {% endif %}
-            </div>
-        </div>
+            </h4>
 
-        {% if error %}
-        <div class="row">
-            <div class="col s12">
-                <div class="card-panel red lighten-4 red-text text-darken-2">
-                    <i class="material-icons left">error</i>{{ error }}
-                </div>
-            </div>
-        </div>
-        {% endif %}
+            {% if name and not view_mode %}
+                <p class="flow-text class-page-subtitle">
+                    Hello {{ name }}, enter the details of the class
+                </p>
+            {% endif %}
 
-        <div class="row">
-            <div class="col s12">
-                <div class="card">
-                    <div class="card-content">
-                        <form id="form" name="form" action="{% if view_mode %}/view.html{% else %}/{% endif %}" method="post">
-                            {% if name and not view_mode %}
-                                <input type="hidden" name="teacher_name" value="{{ name }}">
-                            {% endif %}
-
-                            <div class="row">
-                                {% if view_mode or not name %}
-                                <div class="input-field col s12">
-                                    <i class="material-icons prefix">account_circle</i>
-                                    <input type="text" id="name" name="name" value="{{ name or '' }}" required>
-                                    <label for="name">Teacher Name</label>
-                                </div>
-                                {% endif %}
-
-                                <div class="input-field col s12 m6">
-                                    <i class="material-icons prefix">group</i>
-                                    <input type="number" id="number" name="number" value="30" min="1" max="100" required>
-                                    <label for="number">Total Number of Students</label>
-                                </div>
-
-                                <div class="input-field col s12 m6">
-                                    <i class="material-icons prefix">book</i>
-                                    <select id="course" name="course" required>
-                                        <option value="" disabled selected>Choose Course</option>
-                                        <option value="Computer Science">Computer Science</option>
-                                        <option value="Information Technology">Information Technology</option>
-                                        <option value="Electronics">Electronics</option>
-                                        <option value="Mechanical">Mechanical</option>
-                                        <option value="Civil">Civil</option>
-                                    </select>
-                                    <label for="course">Course</label>
-                                </div>
-
-                                <div class="input-field col s12 m6">
-                                    <i class="material-icons prefix">school</i>
-                                    <select id="year" name="year" required>
-                                        <option value="" disabled selected>Choose Year</option>
-                                        <option value="2024">2024</option>
-                                        <option value="2023">2023</option>
-                                        <option value="2022">2022</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                    </select>
-                                    <label for="year">Enrollment Year</label>
-                                </div>
-
-                                <div class="input-field col s12 m6">
-                                    <i class="material-icons prefix">date_range</i>
-                                    <input class="datepicker" type="text" id="date" name="date" value="{{ date or '' }}" required>
-                                    <label for="date">Date</label>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col s12 center-align">
-                                    <button class="btn waves-effect waves-light blue" type="submit">
-                                        {% if view_mode %}
-                                            <i class="material-icons left">search</i>Search Records
-                                        {% else %}
-                                            <i class="material-icons left">arrow_forward</i>Next
-                                        {% endif %}
-                                    </button>
-                                    <a href="/" class="btn waves-effect waves-light grey">
-                                        <i class="material-icons left">home</i>Home
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Materialize components
-            M.AutoInit();
+    {% if error %}
+    <div class="row">
+        <div class="col s12">
+            <div class="card-panel red lighten-4 red-text text-darken-2">
+                <i class="material-icons left">error</i>{{ error }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-            // Initialize datepicker with proper format
-            var dpelem = document.querySelector('.datepicker');
-            if (dpelem) {
-                M.Datepicker.init(dpelem, {
-                    format: 'yyyy-mm-dd',
-                    defaultDate: new Date(),
-                    setDefaultDate: true
-                });
-            }
+    <div class="row">
+        <div class="col s12">
 
-            // Initialize select elements
-            var selects = document.querySelectorAll('select');
-            M.FormSelect.init(selects);
+            <div class="card class-card">
+                <div class="card-content">
+
+                    <form
+                        id="form"
+                        name="form"
+                        action="{% if view_mode %}/view.html{% else %}/{% endif %}"
+                        method="post"
+                    >
+
+                        {% if name and not view_mode %}
+                            <input type="hidden" name="teacher_name" value="{{ name }}">
+                        {% endif %}
+
+                        <div class="row">
+
+                            {% if view_mode or not name %}
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">account_circle</i>
+
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value="{{ name or '' }}"
+                                    required
+                                >
+
+                                <label for="name" {% if name %}class="active"{% endif %}>
+                                    Teacher Name
+                                </label>
+                            </div>
+                            {% endif %}
+
+                            <!-- Total students -->
+                            <div class="input-field col s12 m6">
+                                <i class="material-icons prefix">group</i>
+
+                                <input
+                                    type="number"
+                                    id="number"
+                                    name="number"
+                                    value="30"
+                                    min="1"
+                                    max="100"
+                                    required
+                                >
+
+                                <label for="number" class="active">
+                                    Total Number of Students
+                                </label>
+                            </div>
+
+                            <!-- Course -->
+                            <div class="input-field select-field col s12 m6">
+                                <i class="material-icons prefix">book</i>
+
+                                <select id="course" name="course" required>
+                                    <option value="" disabled selected>
+                                        Choose Course
+                                    </option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Mechanical">Mechanical</option>
+                                    <option value="Civil">Civil</option>
+                                </select>
+
+                                <label for="course">Course</label>
+                            </div>
+
+                            <!-- Enrollment year -->
+                            <div class="input-field select-field col s12 m6">
+                                <i class="material-icons prefix">school</i>
+
+                                <select id="year" name="year" required>
+                                    <option value="" disabled selected>
+                                        Choose Year
+                                    </option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2020">2020</option>
+                                </select>
+
+                                <label for="year">Enrollment Year</label>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="input-field col s12 m6">
+                                <i class="material-icons prefix">date_range</i>
+
+                                <input
+                                    class="datepicker"
+                                    type="text"
+                                    id="date"
+                                    name="date"
+                                    value="{{ date or '' }}"
+                                    required
+                                >
+
+                                <label for="date" {% if date %}class="active"{% endif %}>
+                                    Date
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col s12 center-align class-buttons">
+
+                                <button
+                                    class="btn waves-effect waves-light blue"
+                                    type="submit"
+                                >
+                                    {% if view_mode %}
+                                        <i class="material-icons left">search</i>
+                                        Search Records
+                                    {% else %}
+                                        <i class="material-icons left">arrow_forward</i>
+                                        Next
+                                    {% endif %}
+                                </button>
+
+                                <a href="/" class="btn waves-effect waves-light grey">
+                                    <i class="material-icons left">home</i>
+                                    Home
+                                </a>
+
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* Initialize select dropdowns */
+    var selects = document.querySelectorAll('select');
+    M.FormSelect.init(selects);
+
+    /* Initialize date picker */
+    var dateElement = document.querySelector('.datepicker');
+
+    if (dateElement) {
+        M.Datepicker.init(dateElement, {
+            format: 'yyyy-mm-dd',
+            defaultDate: new Date(),
+            setDefaultDate: true
         });
-    </script>
+    }
+
+    /* Ensure labels for existing values stay active */
+    document.querySelectorAll('.input-field input').forEach(function (input) {
+        if (input.value.trim() !== '') {
+            var label = document.querySelector('label[for="' + input.id + '"]');
+            if (label) {
+                label.classList.add('active');
+            }
+        }
+    });
+});
+</script>
+
 </body>
 </html>

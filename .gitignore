@@ -102,3 +102,13 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Blockchain runtime data
+blockchain_data.json
+
+# Blockchain backups
+blockchain_backups/
+
+# Python cache
+__pycache__/
+*.pyc
